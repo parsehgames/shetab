@@ -1,0 +1,19 @@
+{
+    "name": "com.Funtory.Editor",
+    "references": [
+        "com.Funtory",
+        "com.SeganX",
+        "com.SeganX.Editor"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

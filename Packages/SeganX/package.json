@@ -1,0 +1,21 @@
+{
+  "name": "com.seganx.mobile",
+  "displayName": "SeganX",
+  "version": "1.0.1",
+  "unity": "2019.1",
+  "description": "This is the SeganX library including scripts and tools for mobile game development",
+  "keywords": [ "Funtory" ],
+  "category": "Project Base",
+  "author": {
+    "name": "Sajad Beigjani",
+    "email": "sajad.b@gmail.com",
+    "url": "https://www.seganx.com"
+  },
+  "dependencies": {
+	"com.unity.mobile.notifications": "1.0.3"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://git.tapsell.ir/tapsellgames/seganx.git"
+  }
+}

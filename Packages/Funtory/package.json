@@ -1,0 +1,14 @@
+{
+  "name": "com.funtory.mobile",
+  "displayName": "Funtory",
+  "version": "1.0.2",
+  "unity": "2019.1",
+  "description": "This is the Funtory freamwork",
+  "keywords": [ "Funtory" ],
+  "category": "Project Template",
+  "author": {
+    "name": "Sajad Beigjani",
+    "email": "sajad.b@gmail.com",
+    "url": "https://www.seganx.com"
+  }
+}

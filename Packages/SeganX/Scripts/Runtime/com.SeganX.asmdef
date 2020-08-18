@@ -1,0 +1,15 @@
+{
+    "name": "com.SeganX",
+    "references": [
+        "GUID:ac145e6b8c6034cdbadc8c6e26aedbcf"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

@@ -1,0 +1,17 @@
+{
+    "name": "com.Funtory.Editor.Tests",
+    "references": [
+        "GUID:b137259bddf86aa429cf50c9e0aa5a1b"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
