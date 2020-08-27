@@ -1,9 +1,9 @@
 {
   "name": "com.funtory.mobile",
   "displayName": "Funtory",
-  "version": "1.0.2",
+  "version": "1.1.0",
   "unity": "2019.1",
-  "description": "This is the Funtory freamwork",
+  "description": "This is the Funtory freamwork.\nhttps://git.tapsell.ir/tapsellgames/funtory.git",
   "keywords": [ "Funtory" ],
   "category": "Project Template",
   "author": {

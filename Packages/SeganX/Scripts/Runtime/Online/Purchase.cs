@@ -7,7 +7,7 @@ namespace SeganX
     {
         public static class Purchase
         {
-            public enum Provider { Cafebazaar, Gateway }
+            public enum Provider { Market, Gateway }
 #if SX_ONLINE
 
             [System.Serializable]
@@ -33,66 +33,85 @@ namespace SeganX
                 public long purchaseTime = 0;
             }
 
-            private static string bazaar_access_token
+            private static string market_access_token
             {
-                get { return PlayerPrefsEx.GetString("Online.Purchase.bazaar_access_token", string.Empty); }
-                set { PlayerPrefsEx.SetString("Online.Purchase.bazaar_access_token", value); }
+                get { return PlayerPrefsEx.GetString("Online.Purchase.market_access_token", string.Empty); }
+                set { PlayerPrefsEx.SetString("Online.Purchase.market_access_token", value); }
             }
-
+#endif
             public static void Start(Provider provider, System.Action callback)
             {
-                var post = new StartPost();
-                post.game_id = Core.GameId;
 
-                if (provider == Provider.Cafebazaar)
+                if (provider == Provider.Market)
                 {
+#if SX_ONLINE
+                    var post = new StartPost();
+                    post.game_id = Core.GameId;
+
+#if BAZAAR                        
                     post.provider = "bazaar";
+#elif MYKET                        
+                    post.provider = "myket";
+#endif
+
                     DownloadData<string>("purchase-start.php", post, (succeed, token) =>
                     {
-                        if (succeed) bazaar_access_token = token;
+                        if (succeed) market_access_token = token;
                         callback();
                     }, 0, 3);
+#else
+                    callback();
+#endif
                 }
                 else if (provider == Provider.Gateway)
                 {
-
+                    callback();
                 }
             }
 
             public static void End(Provider provider, int version, string sku, string token, System.Action<bool, string> callback)
             {
-                if (provider == Provider.Cafebazaar)
+                Verify(provider, sku, token, (success, payload) =>
                 {
-                    Verify(provider, sku, token, (success, payload) =>
-                    {
-                        callback(success, payload);
+                    callback(success, payload);
 
+                    if (provider == Provider.Market)
+                    {
+#if SX_ONLINE
                         var post = new EndPost();
                         post.version = version;
                         post.sku = sku;
                         post.token = token;
                         post.payload = payload;
                         DownloadData<string>("purchase-end.php", post, (done, msg) => { }, 0, 3);
-                    });
-                }
-                else if (provider == Provider.Gateway)
-                {
-
-                }
-            }
 #endif
+                    }
+                    else if (provider == Provider.Gateway)
+                    {
+
+                    }
+                });
+            }
 
             public static void Verify(Provider provider, string sku, string token, System.Action<bool, string> callback)
             {
-                if (provider == Provider.Cafebazaar)
+                if (provider == Provider.Market)
                 {
 #if SX_ONLINE
 
-                    if (bazaar_access_token.HasContent())
+                    if (market_access_token.HasContent())
                     {
-                        var url = "https://pardakht.cafebazaar.ir/devapi/v2/api/validate/" + Application.identifier + "/inapp/" + sku + "/purchases/" + token + "/";
                         var tmp = new Dictionary<string, string>();
-                        tmp.Add("Authorization", bazaar_access_token);
+#if BAZAAR
+                        var url = "https://pardakht.cafebazaar.ir/devapi/v2/api/validate/" + Application.identifier + "/inapp/" + sku + "/purchases/" + token + "/";
+                        tmp.Add("Authorization", market_access_token);
+#elif MYKET
+                        var url = "https://developer.myket.ir/api/applications/" + Application.identifier + "/purchases/products/" + sku + "/tokens/" + token + "/";
+                        tmp.Add("X-Access-Token", market_access_token);
+#else
+                        var url = string.Empty;
+#endif
+
 
                         Http.DownloadText(url, null, tmp, resjson =>
                         {
@@ -100,7 +119,7 @@ namespace SeganX
                             if (res != null)
                                 callback(res.purchaseTime > 0, res.developerPayload);
                             else
-                                callback(false, "Bazaar not respond!");
+                                callback(false, "Market not respond!");
                         },
                         null, 0, 3);
                     }
@@ -115,7 +134,7 @@ namespace SeganX
                 }
                 else if (provider == Provider.Gateway)
                 {
-
+                    callback(true, Core.Salt);
                 }
             }
 

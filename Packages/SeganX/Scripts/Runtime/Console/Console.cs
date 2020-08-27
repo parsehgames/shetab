@@ -112,6 +112,9 @@ namespace SeganX
 
             userInput.onEndEdit.AddListener(str => RunCommand(str));
             runButton.onClick.AddListener(() => RunCommand(userInput.text));
+#else
+            Destroy(runButton.gameObject);
+            Destroy(userInput.gameObject);            
 #endif
         }
 

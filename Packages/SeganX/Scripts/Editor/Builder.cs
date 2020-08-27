@@ -41,7 +41,9 @@ namespace SeganX
             public bool activated = false;
             public bool buildAppBundle = false;
             public Architecture architecture = Architecture.ARMV7;
-            public List<Disabled> disables = null;
+            public string addSymbols = string.Empty;
+            public string removeSymbols = string.Empty;
+            public List<Disabled> disables = new List<Disabled>();
             public List<Replaced> replaces = new List<Replaced>();
         }
 

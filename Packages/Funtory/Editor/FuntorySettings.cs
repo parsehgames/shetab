@@ -12,6 +12,7 @@ static class FuntorySettings
         public string name = string.Empty;
         public string description = string.Empty;
         public string checker = string.Empty;
+        public string symbol = string.Empty;
     }
 
     private const string packageName = "com.funtory.mobile";
@@ -24,6 +25,21 @@ static class FuntorySettings
             name = "Infrastructure",
             description = "Infrastructure will creates base classes. This is neccessary for use other tools and libraries.",
             checker = "Infrastructure"
+        },
+        new Package()
+        {
+            package = "funtory.abr.unitypackage",
+            name = "Abr Studio",
+            description = "Adds Abs studio plugin including advertisement system and market functions.",
+            checker = "AbrStudio",
+            symbol = "ABR"
+        },
+        new Package()
+        {
+            package = "funtory.purchase.unitypackage",
+            name = "Purchase Plugin",
+            description = "Adds Purchase plugin including Iab system for CafeBazaar and Myket.\nNote: Builder system must disable specific jar file and modify manifest file to switch between markets.\nFiles included: Bazaar.jar + Myket.jar + AndroidManifestTemplate.xml",
+            checker = "Purchase",
         },
         new Package()
         {
@@ -51,7 +67,8 @@ static class FuntorySettings
             package = "funtory.roads.unitypackage",
             name = "Roads System",
             description = "Adds Road system to project including tools for creating and traversing through splines.\n+Fields in FunConfig.\n+Functions in FunFactory.\n+RoadSeeker for moving on roads.",
-            checker = "Roads"
+            checker = "Roads",
+            symbol = "SX_SPLINE;SX_MESH"
         },
         new Package()
         {
@@ -82,6 +99,30 @@ static class FuntorySettings
         return Directory.Exists(packagePath) || File.Exists(packagePath);
     }
 
+    private static string AddRemoveSymbol(string current, string symbol, bool addsymbols)
+    {
+        if (string.IsNullOrEmpty(symbol)) return current;
+
+        var cursymbols = new List<string>(current.Split(new char[] { ';' }, System.StringSplitOptions.RemoveEmptyEntries));
+        var newsymbols = new List<string>(symbol.Split(new char[] { ';' }, System.StringSplitOptions.RemoveEmptyEntries));
+
+        //  remove duplicated symbols
+        foreach (var item in newsymbols)
+            cursymbols.RemoveAll(x => x == item);
+
+        //  add new symbols
+        if (addsymbols)
+            foreach (var item in newsymbols)
+                cursymbols.Add(item);
+
+        cursymbols.Sort();
+        return string.Join(";", cursymbols.ToArray());
+    }
+
+
+    //////////////////////////////////////////////////////
+    /// Settings Provider
+    //////////////////////////////////////////////////////
     [SettingsProvider]
     public static SettingsProvider CreateSettings()
     {
@@ -103,7 +144,14 @@ static class FuntorySettings
                 if (IsAlreadyInstalled(item.checker))
                     GUILayout.Box("Installed", GUILayout.ExpandHeight(true), GUILayout.Width(100));
                 else if (GUILayout.Button("Install", GUILayout.ExpandHeight(true), GUILayout.Width(100)))
+                {
                     AssetDatabase.ImportPackage(PackageResourcesPath + item.package, true);
+
+                    var currentSymbols = PlayerSettings.GetScriptingDefineSymbolsForGroup(BuildTargetGroup.Android);
+                    var resutl = AddRemoveSymbol(currentSymbols, item.symbol, true);
+                    if (resutl != currentSymbols)
+                        PlayerSettings.SetScriptingDefineSymbolsForGroup(BuildTargetGroup.Android, resutl);
+                }
                 EditorGUILayout.EndHorizontal();
             }
 

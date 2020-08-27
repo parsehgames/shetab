@@ -61,6 +61,8 @@ namespace SeganX
             PlayerSettings.Android.keystorePass = builder.keystore.storePassword;
             PlayerSettings.Android.keyaliasPass = builder.keystore.alisePassword;
             var currentArchitectures = PlayerSettings.Android.targetArchitectures;
+            var initialSymbols = PlayerSettings.GetScriptingDefineSymbolsForGroup(BuildTargetGroup.Android);
+            var currentSymbols = initialSymbols;
 
             foreach (var disbale in builder.preBuild.disables)
                 DisableFile(disbale, false);
@@ -71,6 +73,11 @@ namespace SeganX
                 var build = builder.builds[index];
                 if (build.activated == false) continue;
                 PlayerSettings.Android.targetArchitectures = (AndroidArchitecture)build.architecture;
+
+                var symbols = AddRemoveSymbol(initialSymbols, build.addSymbols, true);
+                symbols = AddRemoveSymbol(symbols, build.removeSymbols, false);
+                if (currentSymbols != symbols)
+                    PlayerSettings.SetScriptingDefineSymbolsForGroup(BuildTargetGroup.Android, currentSymbols = symbols);
 
                 foreach (var replace in builder.preBuild.replaces)
                     ReplaceInFile(replace);
@@ -97,12 +104,14 @@ namespace SeganX
                     if (item.data != null)
                         File.WriteAllBytes(item.filename, item.data);
                 backupFiles.Clear();
+
             }
 
             foreach (var disbale in builder.preBuild.disables)
                 DisableFile(disbale, true);
 
             PlayerSettings.Android.targetArchitectures = currentArchitectures;
+            PlayerSettings.SetScriptingDefineSymbolsForGroup(BuildTargetGroup.Android, initialSymbols);
 
             Debug.Log("Finished building process.");
         }
@@ -229,6 +238,26 @@ namespace SeganX
                 Debug.Log("Build failed: " + e.Message);
                 return false;
             }
+        }
+
+        private static string AddRemoveSymbol(string current, string symbol, bool addsymbols)
+        {
+            if (string.IsNullOrEmpty(symbol)) return current;
+
+            var cursymbols = new List<string>(current.Split(new char[] { ';' }, System.StringSplitOptions.RemoveEmptyEntries));
+            var newsymbols = new List<string>(symbol.Split(new char[] { ';' }, System.StringSplitOptions.RemoveEmptyEntries));
+
+            //  remove duplicated symbols
+            foreach (var item in newsymbols)
+                cursymbols.RemoveAll(x => x == item);
+
+            //  add new symbols
+            if (addsymbols)
+                foreach (var item in newsymbols)
+                    cursymbols.Add(item);
+
+            cursymbols.Sort();
+            return string.Join(";", cursymbols.ToArray());
         }
     }
 }
